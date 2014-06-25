@@ -1,58 +1,36 @@
 <html>
   <head>
+    <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript">
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Date', 'Voltage', 'Current'],
-          ['2004',  1000,      400],
-          ['2005',  1170,      460],
-          ['2006',  660,       1120],
-          ['2007',  1030,      540]
-        ]);
+    
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1', {'packages':['corechart']});
+      
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.setOnLoadCallback(drawChart);
+      
+    function drawChart() {
+      var jsonData = $.ajax({
+          url: "getData.php",
+          dataType:"json",
+          async: false
+          }).responseText;
+          
+      // Create our data table out of JSON data loaded from server.
+      var data = new google.visualization.DataTable(jsonData);
 
-        var options = {
-          title: 'Company Performance',
-          vAxis: {title: "Amount ($)"},
-          hAxis: {title: "Year"}
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data, {width: 1600, height: 600});
+    }
 
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
     </script>
   </head>
+
   <body>
-
-    <?php
-$con=mysqli_connect("127.0.0.1","root","root","mysql");
-// Check connection
-if (mysqli_connect_errno()) {
-  echo "Failed to connect to MySQL: " . mysqli_connect_error();
-}
-
-$result = mysqli_query($con,"SELECT * FROM data1");
-
-echo "<table border='1'>";
-echo "<tr><th>Date</th><th>Voltage</th><th>Current</th></tr>";
-
-while($row = mysqli_fetch_array($result)) {
-  echo "<tr>";
-  echo "<td>" . $row['date'] . "</td>";
-  echo "<td>" . $row['voltage'] . "</td>";
-  echo "<td>" . $row['current'] . "</td>";
-
-  echo "</tr>";
-}
-
-echo "</table>";
-
-mysqli_close($con);
-?>
-
-      <!--<div id="chart_div" style="width: 50%; height: 50%;"></div> -->
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div"></div>
   </body>
 </html>
