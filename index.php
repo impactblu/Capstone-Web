@@ -7,6 +7,7 @@
     <title>Capstone Project 22</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/starter-template.css" rel="stylesheet">
 
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -66,7 +67,15 @@
 
 
     <!--Div that will hold the line chart-->
+    <div class="container">
+      <div class="starter-template">
+        <h1>Archive</h1>
+        <p class="lead">Last Month's Performance</p>
+      </div>
+    </div>
+
     <div id="chart_div"></div>
+
 
 
 
