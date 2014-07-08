@@ -6,7 +6,10 @@ if (mysqli_connect_errno())
 	echo "Failed to connect to database: ".mysqli_connect_errno();
 }
 
-$result = mysqli_query($con, "SELECT * FROM data1 ORDER BY date DESC LIMIT 7");
+$result = mysqli_query($con, "SELECT * FROM (
+	SELECT * FROM data1 ORDER BY date DESC LIMIT 7
+) sub
+ORDER BY date ASC;");
 if (!$result) { // add this check.
     die('Invalid query: ' . mysql_error());
 }
