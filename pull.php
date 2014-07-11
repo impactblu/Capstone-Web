@@ -7,11 +7,13 @@ if (mysqli_connect_errno())
 }
 
 $date = date('Y-m-d H:i:s');
-$v = $_GET['volt'];
-$c = $_GET['curr'];
+$v1 = $_GET['v1'];
+$v2 = $_GET['v2'];
+$v3 = $_GET['v3'];
+$c = $_GET['c'];
 
-$res = mysqli_query($con, "INSERT INTO data1 (date,voltage,current) 
-VALUES ('$date','$v','$c')") or die('Error inserting into db');
+$res = mysqli_query($con, "INSERT INTO data1 (date,voltage,current,voltage2,voltage3) 
+VALUES ('$date','$v1','$c','$v2','$v3')") or die('Error inserting into db');
 
 mysql_close($con);
 

@@ -9,8 +9,10 @@ char ssid[] = "SolarCapstone";
 int del;
 int status = WL_IDLE_STATUS;
 int led = 13;
-int out = A15;
-int in = A14;
+int csens_volt = A15;
+int vsens3 = A14;
+int vsens2 = A13;
+int vsens1 = A12;
 
 uint8_t serverip[4] = {192,241,246,131};
 uint8_t servport = 80;
@@ -20,8 +22,10 @@ WiFiClient client;
 void setup(){
   Serial.begin(9600);
   pinMode(led, OUTPUT);
+  pinMode(A12, INPUT);
+  pinMode(A13, INPUT);
   pinMode(A14, INPUT);
-  pinMode(A15, OUTPUT);
+  pinMode(A15, INPUT);
   del = 0;
   trigger = true;
   TCCR1A = 0; // set TCCR1A register to 00000000
@@ -55,15 +59,25 @@ void loop(){
     delay(2);
     del = 0;
     Serial.println("Current:");
-    int val = analogRead(in);
-    double voltage = val*5.0/1023.0;
-    double current = (voltage - 2.5)/0.066;
+    
+    double csv = analogRead(csens_volt)*5.0/1023.0;
+    double vs1 = analogRead(vsens1)*38.6*5.0/1023.0/5.6;
+    double vs2 = analogRead(vsens2)*38.6*5.0/1023.0/5.6;
+    double vs3 = analogRead(vsens3)*38.6*5.0/1023.0/5.6;
+
+    double current = (csv - 2.5)/0.066;
+    
+    Serial.print("VS1: ");
+    Serial.println(vs1);
+    Serial.print("VS2: ");
+    Serial.println(vs2);
+    Serial.print("VS3: ");
+    Serial.println(vs3);
+    Serial.print("CS: ");
     Serial.println(current);
-    Serial.println("CS voltage:");
-    Serial.println(voltage);
-    Serial.println("");
+    
     for (i=0;i<10;i++) {
-     if (sendHer(voltage, current)) {
+     if (sendHer(vs1, vs2, vs3, current)) {
       break;
      }
     } 
@@ -72,7 +86,7 @@ void loop(){
   
 }
 
-boolean sendHer(double v, double c){
+boolean sendHer(double v1, double v2, double v3, double c){
   boolean con = false;
   int i = 0;
 
@@ -91,9 +105,13 @@ boolean sendHer(double v, double c){
   Serial.println("Sending http req");
   client.print("GET /pull.php?");
 
-  client.print("volt=");
-  client.print(v);
-  client.print("&&curr=");
+  client.print("v1=");
+  client.print(v1);
+  client.print("&&v2=");
+  client.print(v2);
+  client.print("&&v3=");
+  client.print(v3);
+  client.print("&&c=");
   client.print(c);
   client.println(" HTTP/1.0\r\n");
   client.println("Host:192.241.246.131\r\n");
