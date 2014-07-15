@@ -10,9 +10,8 @@ int del;
 int status = WL_IDLE_STATUS;
 int led = 13;
 int csens_volt = A15;
-int vsens3 = A14;
-int vsens2 = A13;
-int vsens1 = A12;
+int vsens2 = A14;
+int vsens1 = A13;
 
 uint8_t serverip[4] = {192,241,246,131};
 uint8_t servport = 80;
@@ -22,7 +21,6 @@ WiFiClient client;
 void setup(){
   Serial.begin(9600);
   pinMode(led, OUTPUT);
-  pinMode(A12, INPUT);
   pinMode(A13, INPUT);
   pinMode(A14, INPUT);
   pinMode(A15, INPUT);
@@ -61,23 +59,23 @@ void loop(){
     Serial.println("Current:");
     
     double csv = analogRead(csens_volt)*5.0/1023.0;
-    double vs1 = analogRead(vsens1)*38.6*5.0/1023.0/5.6;
-    double vs2 = analogRead(vsens2)*38.6*5.0/1023.0/5.6;
-    double vs3 = analogRead(vsens3)*38.6*5.0/1023.0/5.6;
+    double vs1 = analogRead(vsens1)*11.0*5.0/1023.0;
+    double vstot = analogRead(vsens2)*11.0*5.0/1023.0;
+    double vs2 = vstot - vs1;
 
-    double current = (csv - 2.5)/0.066;
+    double current = (csv - 2.5)/0.185;
     
     Serial.print("VS1: ");
     Serial.println(vs1);
     Serial.print("VS2: ");
     Serial.println(vs2);
     Serial.print("VS3: ");
-    Serial.println(vs3);
+    Serial.println(vstot);
     Serial.print("CS: ");
     Serial.println(current);
     
     for (i=0;i<10;i++) {
-     if (sendHer(vs1, vs2, vs3, current)) {
+     if (sendHer(vs1, vs2, vstot, current)) {
       break;
      }
     } 
